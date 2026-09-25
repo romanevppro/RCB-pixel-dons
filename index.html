@@ -21,29 +21,24 @@
 :root[data-theme="dark"]{ --bg:#101216; --fg:#F2F0E9; --panel:#181B21; --line:rgba(255,255,255,.12); --muted:#9a9da3; }
 html{ scroll-padding-top:env(safe-area-inset-top,0px); }
 *{ box-sizing:inherit; }
-body{
-  margin:0; background:var(--bg); color:var(--fg);
-  font-family:"Work Sans",system-ui,sans-serif; line-height:1.5;
-}
-.wrap{ max-width:760px; margin:0 auto; padding:0 20px; }
+body{ margin:0; background:var(--bg); color:var(--fg); font-family:"Work Sans",system-ui,sans-serif; line-height:1.5; }
+.wrap{ max-width:760px; margin:0 auto; padding:0 20px; position:relative; }
 header{ padding:48px 0 24px; text-align:center; }
 .eyebrow{ font-size:.85rem; color:var(--ball-orange); font-weight:600; letter-spacing:.02em; margin:0 0 10px; }
-h1{
-  font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase;
-  font-size:clamp(2.1rem,7vw,3.4rem); line-height:1.02; margin:0 0 14px; letter-spacing:.01em;
-}
+h1{ font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(2.1rem,7vw,3.4rem); line-height:1.02; margin:0 0 14px; letter-spacing:.01em; }
 h1 span{ color:var(--ball-orange); }
 .sub{ max-width:46ch; margin:0 auto; color:var(--muted); font-size:1.02rem; }
 
-.wall-stage{
-  margin:32px 0 8px; border-radius:18px; overflow:hidden; position:relative;
-  aspect-ratio:1/1; background:var(--court-blue); box-shadow:0 20px 50px -25px rgba(0,0,0,.5);
-}
-.wall-stage svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.staff-btn{ position:absolute; top:env(safe-area-inset-top,0px); right:20px; margin-top:18px; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--panel); color:var(--muted); font:inherit; font-size:.85rem; cursor:pointer; }
+#staffPanel{ display:none; margin:14px 0 30px; }
+#staffPanel.open{ display:block; }
+
+.wall-stage{ margin:32px 0 8px; border-radius:18px; overflow:hidden; position:relative; aspect-ratio:1/1; background:var(--court-blue); box-shadow:0 20px 50px -25px rgba(0,0,0,.5); }
+.wall-stage svg{ position:absolute; inset:0; width:100%; height:100%; display:block; transition:filter .6s ease, transform .6s ease; }
+.wall-stage svg.blurred{ filter:blur(7px) saturate(1.05); transform:scale(1.06); }
 .grid{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(10,1fr); grid-template-rows:repeat(10,1fr); }
 .cell{ background:var(--court-blue); transition:opacity .5s ease, transform .5s ease; }
 .cell.revealed{ opacity:0; transform:scale(1.4); }
-.cell.mine{ outline:1px solid rgba(255,255,255,.25); outline-offset:-1px; }
 
 .meter{ margin:22px 0 0; }
 .meter-top{ display:flex; justify-content:space-between; align-items:baseline; font-size:.92rem; color:var(--muted); margin-bottom:8px; }
@@ -54,21 +49,12 @@ h1 span{ color:var(--ball-orange); }
 .panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; margin-top:26px; }
 .panel h2{ font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:1.3rem; margin:0 0 14px; letter-spacing:.01em; }
 .row{ display:flex; gap:10px; flex-wrap:wrap; }
-.row input{
-  flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
-  background:var(--bg); color:var(--fg); font:inherit; font-size:1rem;
-}
+.row input{ flex:1; min-width:120px; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font:inherit; font-size:1rem; }
 .amounts{ display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
-.amounts button{
-  padding:9px 14px; border-radius:99px; border:1px solid var(--line); background:transparent;
-  color:var(--fg); font:inherit; font-weight:600; cursor:pointer;
-}
+.amounts button{ padding:9px 14px; border-radius:99px; border:1px solid var(--line); background:transparent; color:var(--fg); font:inherit; font-weight:600; cursor:pointer; }
 .amounts button.active{ background:var(--ball-orange); border-color:var(--ball-orange); color:#fff; }
-.cta{
-  margin-top:14px; width:100%; padding:14px; border:none; border-radius:10px;
-  background:var(--ink); color:#fff; font:inherit; font-weight:700; font-size:1.02rem; cursor:pointer;
-}
-:root[data-theme="dark"] .cta, @media (prefers-color-scheme:dark){ .cta{ background:var(--ball-orange); } }
+.cta{ margin-top:14px; width:100%; padding:14px; border:none; border-radius:10px; background:var(--ink); color:#fff; font:inherit; font-weight:700; font-size:1.02rem; cursor:pointer; }
+.cta:disabled{ opacity:.6; cursor:default; }
 .note{ font-size:.82rem; color:var(--muted); margin-top:10px; }
 
 .supporters{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
@@ -81,24 +67,53 @@ h1 span{ color:var(--ball-orange); }
 .gallery .cap{ font-size:.72rem; color:var(--muted); margin-top:4px; text-align:center; }
 .empty{ color:var(--muted); font-size:.9rem; }
 
+.staff-gate{ display:flex; gap:8px; flex-wrap:wrap; }
+.staff-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+.staff-thumb{ width:56px; height:56px; border-radius:8px; overflow:hidden; background:var(--court-blue); flex:none; }
+.staff-thumb svg{ width:100%; height:100%; }
+.staff-row input[type=number]{ width:110px; padding:9px 10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font:inherit; }
+.staff-row .staff-remove{ margin-left:auto; border:none; background:transparent; color:var(--ball-orange); font:inherit; cursor:pointer; font-weight:600; }
+.staff-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+.staff-actions button{ padding:11px 16px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font:inherit; font-weight:600; cursor:pointer; }
+
 footer{ text-align:center; padding:40px 0 60px; color:var(--muted); font-size:.85rem; }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <button class="staff-btn" id="staffToggle">Staff</button>
   <header>
     <p class="eyebrow">Campagne de dons</p>
     <h1>Un don, <span>un pixel</span>,<br>une image qui prend vie</h1>
-    <p class="sub">Chaque don révèle une partie du mur. À 30&nbsp;€ récoltés, l'image apparaît en entier et reste affichée pour toujours — puis une nouvelle campagne démarre.</p>
+    <p class="sub">Chaque don révèle une partie du mur. Une fois l'objectif atteint, l'image apparaît en entier et reste affichée quelques secondes — puis une nouvelle campagne démarre.</p>
   </header>
 
+  <div id="staffPanel">
+    <div class="panel">
+      <h2>Espace staff</h2>
+      <div id="staffGate" class="staff-gate">
+        <input id="staffPass" type="password" placeholder="Mot de passe staff" style="flex:1;min-width:160px;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;">
+        <button class="staff-actions" id="staffLogin" style="border-radius:10px;border:1px solid var(--line);padding:11px 16px;background:var(--ink);color:#fff;cursor:pointer;">Entrer</button>
+      </div>
+      <div id="staffTools" style="display:none">
+        <div id="campaignList"></div>
+        <div class="staff-actions">
+          <button id="addCampaign">+ Ajouter une campagne</button>
+          <button id="saveCampaigns">Aperçu local</button>
+          <button id="exportCampaigns">Exporter config.json</button>
+        </div>
+        <p class="note">« Aperçu local » ne change la page que sur cet appareil. Pour que tout le monde voie les nouvelles photos, clique « Exporter config.json », puis ajoute ce fichier à la racine de ton dépôt GitHub (à côté d'index.html) et commit.<br>Ce mot de passe n'est pas un vrai système sécurisé (le code est visible publiquement) — il évite juste les modifications accidentelles.</p>
+      </div>
+    </div>
+  </div>
+
   <div class="wall-stage" id="stage">
-    <svg id="artSvg" viewBox="0 0 300 300"></svg>
+    <svg id="artSvg" class="blurred" viewBox="0 0 300 300"></svg>
     <div class="grid" id="grid"></div>
   </div>
 
   <div class="meter">
-    <div class="meter-top"><span>Récolté</span><strong id="raisedLabel">0,00 € / 30,00 €</strong></div>
+    <div class="meter-top"><span>Récolté</span><strong id="raisedLabel">0,00 € / 0,00 €</strong></div>
     <div class="bar"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
   </div>
 
@@ -146,23 +161,23 @@ new QRCode(document.getElementById('qrHolder'), {
 });
 </script>
 <script>
-const GOAL = 30, N = 100, PRICE = GOAL / N;
-const ARTS = [
-  // 0: ballon
+const N = 100;
+const DEFAULT_ARTS = [
   `<rect width="300" height="300" fill="#123B6B"/><circle cx="150" cy="150" r="95" fill="#F5F1E8"/>
    <path d="M150 55 Q195 100 150 150 Q105 200 150 245" stroke="#E8622C" stroke-width="7" fill="none"/>
    <path d="M55 150 Q100 105 150 150 Q200 195 245 150" stroke="#E8622C" stroke-width="7" fill="none"/>
    <circle cx="150" cy="150" r="95" fill="none" stroke="#17181A" stroke-width="6"/>`,
-  // 1: but + filet
   `<rect width="300" height="300" fill="#123B6B"/><rect x="40" y="60" width="220" height="150" fill="none" stroke="#F5F1E8" stroke-width="10"/>
    <path d="M40 60 L260 60 M40 60 L60 210 M260 60 L240 210" stroke="#F5F1E8" stroke-width="6" fill="none"/>
    <circle cx="185" cy="120" r="26" fill="#E8622C"/><circle cx="185" cy="120" r="26" fill="none" stroke="#17181A" stroke-width="4"/>`,
-  // 2: joueur
   `<rect width="300" height="300" fill="#123B6B"/>
    <circle cx="150" cy="95" r="28" fill="#D9A441"/>
    <path d="M150 123 L150 200 M150 140 L90 110 M150 140 L215 90 M150 200 L110 270 M150 200 L195 270" stroke="#F5F1E8" stroke-width="14" fill="none" stroke-linecap="round"/>
    <circle cx="222" cy="80" r="16" fill="#E8622C"/>`
 ];
+const DEFAULT_CAMPAIGNS = DEFAULT_ARTS.map(a => ({ img: a, price: 30 }));
+let CAMPAIGNS = DEFAULT_CAMPAIGNS;
+const STAFF_PASSWORD = 'rcb-staff';
 
 let state = JSON.parse(localStorage.getItem('hb_wall') || 'null') || {
   round: 0, raised: 0, order: shuffledOrder(0), donors: [], completed: []
@@ -174,14 +189,30 @@ function shuffledOrder(seed){
   return arr;
 }
 function save(){ localStorage.setItem('hb_wall', JSON.stringify(state)); }
-
-function renderArt(){
-  document.getElementById('artSvg').innerHTML = ARTS[state.round % ARTS.length];
+function currentCampaign(){ return CAMPAIGNS[state.round % CAMPAIGNS.length]; }
+function artMarkup(c){
+  const img = (c.img || '').trim();
+  if(img.startsWith('<')) return img;
+  return `<rect width="300" height="300" fill="#123B6B"/><image href="${img}" width="300" height="300" preserveAspectRatio="xMidYMid slice"/>`;
 }
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+async function loadCampaigns(){
+  const draft = localStorage.getItem('hb_staff_campaigns');
+  if(draft){ try{ const p = JSON.parse(draft); if(p.length){ CAMPAIGNS = p; return; } }catch(e){} }
+  try{
+    const res = await fetch('config.json', { cache: 'no-store' });
+    if(res.ok){ const data = await res.json(); if(Array.isArray(data) && data.length){ CAMPAIGNS = data; return; } }
+  }catch(e){}
+  CAMPAIGNS = DEFAULT_CAMPAIGNS;
+}
+
+function renderArt(){ document.getElementById('artSvg').innerHTML = artMarkup(currentCampaign()); }
 function renderGrid(){
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  const revealedCount = Math.min(N, Math.floor(state.raised / PRICE));
+  const price = currentCampaign().price, pxPrice = price / N;
+  const revealedCount = Math.min(N, Math.floor(state.raised / pxPrice));
   const revealedSet = new Set(state.order.slice(0, revealedCount));
   for(let i=0;i<N;i++){
     const d = document.createElement('div');
@@ -189,11 +220,16 @@ function renderGrid(){
     grid.appendChild(d);
   }
 }
+function updateBlur(){
+  const done = state.raised >= currentCampaign().price;
+  document.getElementById('artSvg').classList.toggle('blurred', !done);
+}
 function renderMeter(){
-  const pct = Math.min(100, (state.raised/GOAL)*100);
+  const price = currentCampaign().price;
+  const pct = Math.min(100, (state.raised/price)*100);
   document.getElementById('barFill').style.width = pct+'%';
   document.getElementById('raisedLabel').textContent =
-    state.raised.toFixed(2).replace('.',',')+' € / '+GOAL.toFixed(2).replace('.',',')+' €';
+    state.raised.toFixed(2).replace('.',',')+' € / '+price.toFixed(2).replace('.',',')+' €';
 }
 function renderSupporters(){
   const el = document.getElementById('supporters');
@@ -206,12 +242,24 @@ function renderGallery(){
   if(!state.completed.length){ el.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
   el.innerHTML = state.completed.map(c =>
-    `<div><div class="thumb"><svg viewBox="0 0 300 300">${ARTS[c.art % ARTS.length]}</svg></div>
+    `<div><div class="thumb"><svg viewBox="0 0 300 300">${artMarkup(c.campaign)}</svg></div>
      <p class="cap">${c.donors} supporters</p></div>`).join('');
 }
-function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function renderAll(){ renderArt(); updateBlur(); renderGrid(); renderMeter(); renderSupporters(); renderGallery(); }
 
-function renderAll(){ renderArt(); renderGrid(); renderMeter(); renderSupporters(); renderGallery(); }
+function revealComplete(){
+  document.getElementById('artSvg').classList.remove('blurred');
+  renderGrid();
+  const btn = document.getElementById('donateBtn');
+  btn.disabled = true; btn.textContent = 'Image dévoilée — prochaine campagne dans 10s…';
+  setTimeout(()=>{
+    state.completed.unshift({ campaign: currentCampaign(), donors: state.donors.length });
+    state.round += 1; state.raised = 0; state.donors = []; state.order = shuffledOrder(state.round);
+    save();
+    btn.disabled = false; btn.textContent = 'Révéler mes pixels';
+    renderAll();
+  }, 10000);
+}
 
 document.getElementById('amountBtns').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
@@ -224,22 +272,89 @@ document.getElementById('donateBtn').addEventListener('click', ()=>{
   const amt = parseFloat(document.getElementById('amountInput').value);
   const name = document.getElementById('nameInput').value.trim() || 'Anonyme';
   if(!amt || amt <= 0){ document.getElementById('amountInput').focus(); return; }
-  state.raised = Math.min(GOAL, state.raised + amt);
+  state.raised = Math.min(currentCampaign().price, state.raised + amt);
   state.donors.push({name, amount: amt});
   save(); renderGrid(); renderMeter(); renderSupporters();
-
-  if(state.raised >= GOAL){
-    setTimeout(()=>{
-      state.completed.unshift({ art: state.round, donors: state.donors.length });
-      state.round += 1; state.raised = 0; state.donors = []; state.order = shuffledOrder(state.round);
-      save(); renderAll();
-    }, 900);
-  }
   document.getElementById('amountInput').value=''; document.getElementById('nameInput').value='';
   document.querySelectorAll('#amountBtns button').forEach(x=>x.classList.remove('active'));
+  if(state.raised >= currentCampaign().price){ revealComplete(); } else { updateBlur(); }
 });
 
-renderAll();
+// --- Staff panel ---
+let draftCampaigns = [];
+document.getElementById('staffToggle').addEventListener('click', ()=>{
+  document.getElementById('staffPanel').classList.toggle('open');
+});
+function unlockStaff(){
+  document.getElementById('staffGate').style.display='none';
+  document.getElementById('staffTools').style.display='block';
+  draftCampaigns = CAMPAIGNS.map(c=>({...c}));
+  paintStaffList();
+}
+document.getElementById('staffLogin').addEventListener('click', ()=>{
+  if(document.getElementById('staffPass').value === STAFF_PASSWORD){
+    sessionStorage.setItem('hb_staff_ok','1'); unlockStaff();
+  } else { alert('Mot de passe incorrect'); }
+});
+function paintStaffList(){
+  const el = document.getElementById('campaignList');
+  el.innerHTML = draftCampaigns.map((c,i)=>`
+    <div class="staff-row">
+      <div class="staff-thumb"><svg viewBox="0 0 300 300">${artMarkup(c)}</svg></div>
+      <input type="file" accept="image/*" class="staff-file" data-i="${i}">
+      <input type="number" min="1" step="0.5" value="${c.price}" class="staff-price" data-i="${i}" placeholder="Prix (€)">
+      <button class="staff-remove" data-i="${i}">Supprimer</button>
+    </div>`).join('') || '<p class="empty">Aucune campagne — ajoute-en une.</p>';
+}
+document.getElementById('campaignList').addEventListener('change', e=>{
+  const i = +e.target.dataset.i;
+  if(e.target.classList.contains('staff-price')){ draftCampaigns[i].price = parseFloat(e.target.value)||30; }
+  if(e.target.classList.contains('staff-file') && e.target.files[0]){
+    const file = e.target.files[0], reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 500; canvas.height = 500;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.max(500/img.width, 500/img.height);
+        const w = img.width*scale, h = img.height*scale;
+        ctx.drawImage(img, (500-w)/2, (500-h)/2, w, h);
+        draftCampaigns[i].img = canvas.toDataURL('image/jpeg', 0.82);
+        paintStaffList();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+document.getElementById('campaignList').addEventListener('click', e=>{
+  if(e.target.classList.contains('staff-remove')){
+    draftCampaigns.splice(+e.target.dataset.i, 1); paintStaffList();
+  }
+});
+document.getElementById('addCampaign').addEventListener('click', ()=>{
+  draftCampaigns.push({ img: DEFAULT_ARTS[draftCampaigns.length % DEFAULT_ARTS.length], price: 30 });
+  paintStaffList();
+});
+document.getElementById('saveCampaigns').addEventListener('click', ()=>{
+  if(!draftCampaigns.length){ alert('Ajoute au moins une campagne'); return; }
+  localStorage.setItem('hb_staff_campaigns', JSON.stringify(draftCampaigns));
+  CAMPAIGNS = draftCampaigns;
+  state = { round: 0, raised: 0, order: shuffledOrder(0), donors: [], completed: state.completed };
+  save(); renderAll();
+  alert('Aperçu mis à jour sur cet appareil.');
+});
+document.getElementById('exportCampaigns').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(draftCampaigns, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'config.json'; a.click();
+});
+
+loadCampaigns().then(()=>{
+  if(sessionStorage.getItem('hb_staff_ok')==='1'){ unlockStaff(); }
+  renderAll();
+});
 </script>
 </body>
 </html>
